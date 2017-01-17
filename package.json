@@ -1,0 +1,41 @@
+{
+  "name": "hugejs",
+  "version": "1.0.0",
+  "description": "hugejs",
+  "main": "./build/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hugejs"
+  ],
+  "author": "kian",
+  "license": "ISC",
+  "dependencies": {
+      "body-parser": "~1.15.2",
+      "cookie-parser": "~1.4.3",
+      "debug": "~2.2.0",
+      "ejs": "~2.5.2",
+      "express": "~4.14.0",
+      "morgan": "~1.7.0",
+      "serve-favicon": "~2.3.0",
+      "lodash": "^4.16.4",
+      "ws": "^1.1.1"
+  },
+  "devDependencies": {
+  "@types/node": "^7.0.0",
+
+  "grunt": "^1.0.1",
+  "grunt-contrib-compress": "^1.3.0",
+  "grunt-contrib-concat": "^1.0.1",
+  "grunt-contrib-copy": "^1.0.0",
+  "grunt-contrib-cssmin": "^1.0.2",
+  "grunt-contrib-htmlmin": "^2.0.0",
+  "grunt-contrib-jshint": "^1.0.0",
+  "grunt-contrib-uglify": "^2.0.0",
+  "grunt-contrib-watch": "^1.0.0",
+  "grunt-exec": "^1.0.1",
+  "grunt-nw-builder": "^3.1.0",
+  "grunt-text-replace": "^0.4.0"
+}
+}
