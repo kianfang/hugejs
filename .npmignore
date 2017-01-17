@@ -1,0 +1,5 @@
+src/*
+.gitignore
+.npmignore
+npm-debug.log
+tsconfig.json

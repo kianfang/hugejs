@@ -1,6 +1,6 @@
 {
   "name": "hugejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "hugejs",
   "main": "./build/main.js",
   "scripts": {
@@ -10,6 +10,10 @@
     "hugejs"
   ],
   "author": "kian",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/waiwaiku/hugejs.git"
+  },
   "license": "ISC",
   "dependencies": {
       "body-parser": "~1.15.2",
