@@ -16,10 +16,28 @@ import {router} from "./lib/router";
 import {convention as _config} from "./config/convention";
 
 interface Options {
-    port: number;
-    rootPath: string;
-    _appPath: string;
-    _viewPath: string;
+    debug:boolean,
+    path:{
+        rootPath:string,
+        _appPath:string,
+        _viewPath:string,
+        _staticPath:string,
+        _filePath:string
+    },
+    view: {
+        engine:string
+    },
+    server: {
+        port:number
+    },
+    socket: {
+        open:boolean,
+        path:string
+    },
+    router: {
+        defaultModule:string
+    },
+    modules:string[]
 }
 
 export class Huge{
@@ -32,7 +50,7 @@ export class Huge{
     protected _path:any;
     constructor(private options:Options) {
         // 确保rootPath存在
-        if(!_config.path.rootPath) throw new Error('options rootPath is exception');
+        if(!options.path.rootPath) throw new Error('options rootPath is exception');
         this.config = defaultsDeep({}, options, _config);
         // console.log(this.config);
         if(!this.config.path.rootPath) throw new Error('options rootPath is exception');

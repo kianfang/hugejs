@@ -16,7 +16,7 @@ class Huge {
         this.options = options;
         this.server = http_1.createServer();
         this.app = express();
-        if (!convention_1.convention.path.rootPath)
+        if (!options.path.rootPath)
             throw new Error('options rootPath is exception');
         this.config = lodash_1.defaultsDeep({}, options, convention_1.convention);
         if (!this.config.path.rootPath)
