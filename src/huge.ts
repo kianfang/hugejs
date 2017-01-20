@@ -7,7 +7,8 @@ import * as logger from "morgan";
 import * as cookieParser from "cookie-parser";
 import {json, urlencoded} from "body-parser";
 import {parse} from "url";
-import {defaultsDeep} from "lodash";
+import {readdir, stat} from "fs";
+import {defaultsDeep, isEmpty, forEach, defaultTo} from "lodash";
 
 // 终端判断模块
 import * as MobileDetect from "mobile-detect";
@@ -22,7 +23,8 @@ interface Options {
         _appPath:string,
         _viewPath:string,
         _staticPath:string,
-        _filePath:string
+        _filePath:string,
+        _faviconPath:string
     },
     view: {
         engine:string
@@ -58,19 +60,41 @@ export class Huge{
         this.config.path.viewPath = join(this.config.path.rootPath, this.config.path._viewPath);
         this.config.path.staticPath = join(this.config.path.rootPath, this.config.path._staticPath);
         this.config.path.filePath = join(this.config.path.rootPath, this.config.path._filePath);
+        this.config.path.faviconPath = join(this.config.path.rootPath, this.config.path._faviconPath);
         // console.log(this.config);
 
-        this.initialApp();
+        if(isEmpty(this.config.modules)) {
+            // 获取模块
+            readdir(this.config.path.appPath, (err, files) => {
+                if(err) {
+                    console.log('Not modules');
+                } else {
+                    forEach(files, (file) => {
+                        let filepath = join(this.config.path.appPath, file);
+                        stat(filepath, (err, stats) => {
+                            if(stats.isDirectory()) {
+                                this.config.modules.push(file);
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        // 开启socket 通信
         if(this.config.socket.open) this.initialSocket();
+        // 开始应用
+        this.initialApp();
     }
 
     private initialApp () {
         this.app.set("x-powered-by", false);
-
+        // uncomment after placing your favicon in /public
+        if(this.config.path._faviconPath) this.app.use(favicon(this.config.path.faviconPath));
+        //设置视图
         this.app.set('views', this.config.path.viewPath);
         this.app.set('view engine', this.config.view.engine);
-        // uncomment after placing your favicon in /public
-        //this.app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+        //解析消息头
         this.app.use(logger('dev'));
         this.app.use(json());
         this.app.use(urlencoded({
@@ -95,9 +119,8 @@ export class Huge{
             }
             next();
         });
-
+        // 转跳路由
         this.app.use('/', router);
-
         // catch 404 and forward to error handler
         this.app.use((req:any, res:any, next:any) => {
             let err:any = new Error('Not Found');
@@ -112,24 +135,24 @@ export class Huge{
             // will print stacktrace
             // if (this.app.get('env') === 'development') {
             this.app.use((err:any, req:any, res:any, next:any) => {
-                res.status(err.status || 500);
+                res.status(defaultTo(err.status, 500));
                 res.render('common/error', {
                     message: err.message,
                     error: err
                 });
             });
-        } else {
-            // production error handler
-            // no stacktraces leaked to user
-            this.app.use((err:any, req:any, res:any, next:any) => {
-                res.status(err.status || 500);
-                res.render(err.status === 404 ? 'common/404':'common/error', {
-                    message: err.message,
-                    status: 404
-                    // error: {}
-                });
-            });
         }
+
+        // production error handler
+        // no stacktraces leaked to user
+        this.app.use((err:any, req:any, res:any, next:any) => {
+            res.status(defaultTo(err.status, 500));
+            res.render(err.status === 404 ? 'common/404':'common/error', {
+                message: err.message,
+                status: 404
+                // error: err
+            });
+        });
 
     }
 
@@ -159,3 +182,5 @@ export class Huge{
         });
     }
 }
+
+export {Controller} from "./class/Controller";

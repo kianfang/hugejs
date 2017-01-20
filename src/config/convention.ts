@@ -1,5 +1,6 @@
 export const convention:any = {
     debug: false,
+    modules: [],
     server: {
         port: 3000,
     }, // 存储服务端配置
@@ -12,7 +13,8 @@ export const convention:any = {
         _appPath: 'app',
         _viewPath: 'views',
         _staticPath: 'static',
-        _filePath: 'file'
+        _filePath: 'file',
+        _faviconPath: ''
     },
     view: {
         engine: 'ejs'

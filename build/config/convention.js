@@ -1,6 +1,7 @@
 "use strict";
 exports.convention = {
     debug: false,
+    modules: [],
     server: {
         port: 3000,
     },
@@ -12,7 +13,8 @@ exports.convention = {
         _appPath: 'app',
         _viewPath: 'views',
         _staticPath: 'static',
-        _filePath: 'file'
+        _filePath: 'file',
+        _faviconPath: ''
     },
     view: {
         engine: 'ejs'

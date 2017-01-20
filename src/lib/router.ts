@@ -1,6 +1,6 @@
 import * as express from "express";
 import {join, sep} from "path";
-import {cloneDeep, indexOf} from "lodash";
+import {cloneDeep, indexOf, forEach, chunk, fromPairs, defaultTo, upperFirst} from "lodash";
 import {} from "fs";
 
 let router = express.Router();
@@ -8,13 +8,13 @@ let router = express.Router();
 router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req: any, res: any, next: any) => {
     let _config = cloneDeep(req._config);
 
-    console.log(_config.router.defaultModule);
+    // console.log(_config.router.defaultModule);
+    // 获取 module controller action 名
+    req._module = defaultTo(req.params.M, _config.router.defaultModule);
+    req._controller = defaultTo(req.params.C, _config.router.defaultController);
+    req._action = defaultTo(req.params.A, _config.router.defaultAction);
 
-    req._module = req.params.M || _config.router.defaultModule;
-    req._controller = req.params.C || _config.router.defaultController;
-    req._action = req.params.A || _config.router.defaultAction;
-
-    console.log([req._module, req._controller, req._action, req.params]);
+    // console.log([req._module, req._controller, req._action, req.params]);
 
     // 判断请求模块是否存在
     if (indexOf(_config.modules, req._module) === -1) {
@@ -25,28 +25,28 @@ router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req: any, res: 
 
         // console.log(req.params);
         if (req.params.A) {
-            req.params[0] = req.params[0] === undefined ? req.params.A : req.params.A + '/' + req.params[0];
+            req.params[0] = req.params[0] === undefined ? req.params.A : `${req.params.A}/${req.params[0]}`;
         }
     }
 
     // 解析路径键/值对参数
     if (req.params[0]) {
-        var pathParam = req.params[0].split(sep);
-        if (pathParam[0] !== '') {
-            for (var i = 0; i < pathParam.length; i += 2) {
-                if (req.params[pathParam[i]]) {
-                    next();
-                    return;
-                }
-                req.params[pathParam[i]] = pathParam[i + 1] || null; //将路径参数添加到params中
-            }
-        }
+        req.params.info = fromPairs(chunk(req.params[0].split(sep), 2));
     }
 
-    console.log([req._module, req._controller, req._action, req.params]);
+    // 获取控制器路径
+    const controllerPath = join(_config.path.appPath, req._module, 'controller', req._controller);
+    try {
+        // 获取控制器模块
+        let Controller = require(controllerPath)[upperFirst(req._controller)];
+        let controller = new Controller(req, res, next);
+        controller[req._action]('test');
+    } catch(e) {
+        e.message = `无法访问控制器（${controllerPath}）`;
+        e.status = 404;
+        next(e);
+    }
 
-    res.render('index');
-    // res.sendFile(_config.path.rootPath + '/index.html');
 });
 
 export {router};

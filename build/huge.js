@@ -3,10 +3,12 @@ const http_1 = require("http");
 const ws_1 = require("ws");
 const path_1 = require("path");
 const express = require("express");
+const favicon = require("serve-favicon");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const body_parser_1 = require("body-parser");
 const url_1 = require("url");
+const fs_1 = require("fs");
 const lodash_1 = require("lodash");
 const MobileDetect = require("mobile-detect");
 const router_1 = require("./lib/router");
@@ -25,12 +27,32 @@ class Huge {
         this.config.path.viewPath = path_1.join(this.config.path.rootPath, this.config.path._viewPath);
         this.config.path.staticPath = path_1.join(this.config.path.rootPath, this.config.path._staticPath);
         this.config.path.filePath = path_1.join(this.config.path.rootPath, this.config.path._filePath);
-        this.initialApp();
+        this.config.path.faviconPath = path_1.join(this.config.path.rootPath, this.config.path._faviconPath);
+        if (lodash_1.isEmpty(this.config.modules)) {
+            fs_1.readdir(this.config.path.appPath, (err, files) => {
+                if (err) {
+                    console.log('Not modules');
+                }
+                else {
+                    lodash_1.forEach(files, (file) => {
+                        let filepath = path_1.join(this.config.path.appPath, file);
+                        fs_1.stat(filepath, (err, stats) => {
+                            if (stats.isDirectory()) {
+                                this.config.modules.push(file);
+                            }
+                        });
+                    });
+                }
+            });
+        }
         if (this.config.socket.open)
             this.initialSocket();
+        this.initialApp();
     }
     initialApp() {
         this.app.set("x-powered-by", false);
+        if (this.config.path._faviconPath)
+            this.app.use(favicon(this.config.path.faviconPath));
         this.app.set('views', this.config.path.viewPath);
         this.app.set('view engine', this.config.view.engine);
         this.app.use(logger('dev'));
@@ -62,22 +84,20 @@ class Huge {
         });
         if (this.config.debug) {
             this.app.use((err, req, res, next) => {
-                res.status(err.status || 500);
+                res.status(lodash_1.defaultTo(err.status, 500));
                 res.render('common/error', {
                     message: err.message,
                     error: err
                 });
             });
         }
-        else {
-            this.app.use((err, req, res, next) => {
-                res.status(err.status || 500);
-                res.render(err.status === 404 ? 'common/404' : 'common/error', {
-                    message: err.message,
-                    status: 404
-                });
+        this.app.use((err, req, res, next) => {
+            res.status(lodash_1.defaultTo(err.status, 500));
+            res.render(err.status === 404 ? 'common/404' : 'common/error', {
+                message: err.message,
+                status: 404
             });
-        }
+        });
     }
     initialSocket() {
         this.ws = new ws_1.Server({
@@ -100,3 +120,5 @@ class Huge {
     }
 }
 exports.Huge = Huge;
+var Controller_1 = require("./class/Controller");
+exports.Controller = Controller_1.Controller;
