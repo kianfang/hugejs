@@ -20,11 +20,23 @@ router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req, res, next)
     if (req.params[0]) {
         req.params.info = lodash_1.fromPairs(lodash_1.chunk(req.params[0].split(path_1.sep), 2));
     }
-    const controllerPath = path_1.join(_config.path.appPath, req._module, 'controller', req._controller);
+    const controllerPath = path_1.join(_config.path.controllerPath, req._module, req._controller);
     try {
         let Controller = require(controllerPath)[lodash_1.upperFirst(req._controller)];
         let controller = new Controller(req, res, next);
-        controller[req._action]('test');
+        let result = controller[req._action]('test');
+        if (!result) {
+            return true;
+        }
+        else {
+            if (lodash_1.isString(result)) {
+                res.send(result);
+                return true;
+            }
+            else {
+                next();
+            }
+        }
     }
     catch (e) {
         e.message = `无法访问控制器（${controllerPath}）`;

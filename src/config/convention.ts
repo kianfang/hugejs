@@ -12,6 +12,8 @@ export const convention:any = {
     path: {
         _appPath: 'app',
         _viewPath: 'views',
+        _controllerPath: 'controller',
+        _modelPath: 'model',
         _staticPath: 'static',
         _filePath: 'file',
         _faviconPath: ''

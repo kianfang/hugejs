@@ -6,7 +6,11 @@ class Controller {
         this.next = next;
         this._initailize();
     }
-    _initailize() {
+    _initailize() { }
+    redirect(path) {
+        this.res.redirect(path);
+    }
+    Db() {
     }
 }
 exports.Controller = Controller;

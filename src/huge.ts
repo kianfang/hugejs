@@ -1,6 +1,9 @@
+export {Controller} from "./class/Controller";
+export {Model} from "./class/Model";
+
 import {createServer} from "http";
 import {Server as WebSocketServer} from "ws";
-import {join} from "path";
+import {join, dirname} from "path";
 import * as express from "express";
 import * as favicon from "serve-favicon";
 import * as logger from "morgan";
@@ -20,11 +23,13 @@ interface Options {
     debug:boolean,
     path:{
         rootPath:string,
-        _appPath:string,
-        _viewPath:string,
         _staticPath:string,
         _filePath:string,
-        _faviconPath:string
+        _faviconPath:string,
+        _appPath:string,
+        _viewPath:string,
+        _controllerPath:string,
+        _modelPath:string
     },
     view: {
         engine:string
@@ -52,15 +57,18 @@ export class Huge{
     protected _path:any;
     constructor(private options:Options) {
         // 确保rootPath存在
-        if(!options.path.rootPath) throw new Error('options rootPath is exception');
+        // if(!options.path.rootPath) throw new Error('options rootPath is exception');
         this.config = defaultsDeep({}, options, _config);
-        // console.log(this.config);
-        if(!this.config.path.rootPath) throw new Error('options rootPath is exception');
-        this.config.path.appPath = join(this.config.path.rootPath, this.config.path._appPath);
-        this.config.path.viewPath = join(this.config.path.rootPath, this.config.path._viewPath);
+        this.config.path.rootPath = defaultTo(this.config.path.rootPath, dirname(module.parent.filename));
         this.config.path.staticPath = join(this.config.path.rootPath, this.config.path._staticPath);
         this.config.path.filePath = join(this.config.path.rootPath, this.config.path._filePath);
         this.config.path.faviconPath = join(this.config.path.rootPath, this.config.path._faviconPath);
+
+        this.config.path.appPath = join(this.config.path.rootPath, this.config.path._appPath);
+
+        this.config.path.viewPath = join(this.config.path.appPath, this.config.path._viewPath);
+        this.config.path.controllerPath = join(this.config.path.appPath, this.config.path._controllerPath);
+        this.config.path.modelPath = join(this.config.path.appPath, this.config.path._modelPath);
         // console.log(this.config);
 
         if(isEmpty(this.config.modules)) {
@@ -182,5 +190,3 @@ export class Huge{
         });
     }
 }
-
-export {Controller} from "./class/Controller";

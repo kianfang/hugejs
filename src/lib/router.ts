@@ -1,6 +1,6 @@
 import * as express from "express";
 import {join, sep} from "path";
-import {cloneDeep, indexOf, forEach, chunk, fromPairs, defaultTo, upperFirst} from "lodash";
+import {cloneDeep, indexOf, forEach, chunk, fromPairs, defaultTo, upperFirst, isString} from "lodash";
 import {} from "fs";
 
 let router = express.Router();
@@ -35,12 +35,23 @@ router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req: any, res: 
     }
 
     // 获取控制器路径
-    const controllerPath = join(_config.path.appPath, req._module, 'controller', req._controller);
+    const controllerPath = join(_config.path.controllerPath, req._module, req._controller);
     try {
         // 获取控制器模块
         let Controller = require(controllerPath)[upperFirst(req._controller)];
         let controller = new Controller(req, res, next);
-        controller[req._action]('test');
+        let result = controller[req._action]('test');
+
+        if(!result) {
+            return true;
+        } else {
+            if(isString(result)) {
+                res.send(result);
+                return true;
+            } else {
+                next();
+            }
+        }
     } catch(e) {
         e.message = `无法访问控制器（${controllerPath}）`;
         e.status = 404;

@@ -1,4 +1,8 @@
 "use strict";
+var Controller_1 = require("./class/Controller");
+exports.Controller = Controller_1.Controller;
+var Model_1 = require("./class/Model");
+exports.Model = Model_1.Model;
 const http_1 = require("http");
 const ws_1 = require("ws");
 const path_1 = require("path");
@@ -18,16 +22,15 @@ class Huge {
         this.options = options;
         this.server = http_1.createServer();
         this.app = express();
-        if (!options.path.rootPath)
-            throw new Error('options rootPath is exception');
         this.config = lodash_1.defaultsDeep({}, options, convention_1.convention);
-        if (!this.config.path.rootPath)
-            throw new Error('options rootPath is exception');
-        this.config.path.appPath = path_1.join(this.config.path.rootPath, this.config.path._appPath);
-        this.config.path.viewPath = path_1.join(this.config.path.rootPath, this.config.path._viewPath);
+        this.config.path.rootPath = lodash_1.defaultTo(this.config.path.rootPath, path_1.dirname(module.parent.filename));
         this.config.path.staticPath = path_1.join(this.config.path.rootPath, this.config.path._staticPath);
         this.config.path.filePath = path_1.join(this.config.path.rootPath, this.config.path._filePath);
         this.config.path.faviconPath = path_1.join(this.config.path.rootPath, this.config.path._faviconPath);
+        this.config.path.appPath = path_1.join(this.config.path.rootPath, this.config.path._appPath);
+        this.config.path.viewPath = path_1.join(this.config.path.appPath, this.config.path._viewPath);
+        this.config.path.controllerPath = path_1.join(this.config.path.appPath, this.config.path._controllerPath);
+        this.config.path.modelPath = path_1.join(this.config.path.appPath, this.config.path._modelPath);
         if (lodash_1.isEmpty(this.config.modules)) {
             fs_1.readdir(this.config.path.appPath, (err, files) => {
                 if (err) {
@@ -120,5 +123,3 @@ class Huge {
     }
 }
 exports.Huge = Huge;
-var Controller_1 = require("./class/Controller");
-exports.Controller = Controller_1.Controller;
