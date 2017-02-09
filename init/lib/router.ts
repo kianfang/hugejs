@@ -34,13 +34,15 @@ router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req: any, res: 
         req.params.info = fromPairs(chunk(req.params[0].split(sep), 2));
     }
 
+    // console.log(req.params.info);
+
     // 获取控制器路径
     const controllerPath = join(_config.path.controllerPath, req._module, req._controller);
     try {
         // 获取控制器模块
         let Controller = require(controllerPath)[upperFirst(req._controller)];
         let controller = new Controller(req, res, next);
-        let result = controller[req._action]('test');
+        let result = controller[req._action](...[req.params.info]);
 
         if(!result) {
             return true;

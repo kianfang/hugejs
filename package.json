@@ -1,6 +1,6 @@
 {
     "name": "hugejs",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "hugejs",
     "main": "./init/huge.js",
     "scripts": {

@@ -24,7 +24,7 @@ router.all(["/:M/:C/:A/\*", "/:M/:C/:A", "/:M/:C", "/:M", "/"], (req, res, next)
     try {
         let Controller = require(controllerPath)[lodash_1.upperFirst(req._controller)];
         let controller = new Controller(req, res, next);
-        let result = controller[req._action](...[req.params.info]);
+        let result = controller[req._action]('test');
         if (!result) {
             return true;
         }
