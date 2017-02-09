@@ -9,9 +9,7 @@
         "removeComments": true,
         "noImplicitAny": false,
         "allowJs": false,
-        "watch": true,
-        "rootDir": "./src",
-        "outDir": "./build"
+        "watch": true
     },
     "include": [
         "./src/**/*"

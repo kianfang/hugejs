@@ -1,6 +1,3 @@
-export {Controller} from "./class/Controller";
-export {Model} from "./class/Model";
-
 import {createServer} from "http";
 import {Server as WebSocketServer} from "ws";
 import {join, dirname} from "path";
@@ -95,7 +92,7 @@ export class Huge{
         this.initialApp();
     }
 
-    private initialApp () {
+    private initialApp() {
         this.app.set("x-powered-by", false);
         // uncomment after placing your favicon in /public
         if(this.config.path._faviconPath) this.app.use(favicon(this.config.path.faviconPath));

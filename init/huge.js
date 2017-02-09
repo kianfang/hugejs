@@ -1,8 +1,4 @@
 "use strict";
-var Controller_1 = require("./class/Controller");
-exports.Controller = Controller_1.Controller;
-var Model_1 = require("./class/Model");
-exports.Model = Model_1.Model;
 const http_1 = require("http");
 const ws_1 = require("ws");
 const path_1 = require("path");
